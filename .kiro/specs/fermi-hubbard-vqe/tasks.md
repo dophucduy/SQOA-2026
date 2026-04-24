@@ -14,26 +14,26 @@
   - [x] 3.1 Implement `exact_ground_energy(hamiltonian)` using `hamiltonian.to_matrix()` and `numpy.linalg.eigvalsh`, returning the minimum eigenvalue
   - [x] 3.2 Add a notebook code cell that computes and displays the exact ground state energy for J=1.0, U=0
 
-- [-] 4. Implement VQE runner and ansatz
-  - [ ] 4.1 Implement `make_ansatz(num_qubits=6, reps=2)` returning `EfficientSU2` with `entanglement='linear'`
-  - [ ] 4.2 Implement `run_vqe(hamiltonian, ansatz, optimizer, seed=42)` wrapping `qiskit_algorithms.VQE` with `StatevectorEstimator`; include non-convergence detection and warning print
-  - [ ] 4.3 Add notebook code cells for a single VQE run at J=1.0, U=0; display optimized energy and comparison to exact value
+- [x] 4. Implement VQE runner and ansatz
+  - [x] 4.1 Implement `make_ansatz(num_qubits=6, reps=2)` returning `EfficientSU2` with `entanglement='linear'`
+  - [x] 4.2 Implement `run_vqe(hamiltonian, ansatz, optimizer, seed=42)` wrapping `qiskit_algorithms.VQE` with `StatevectorEstimator`; include non-convergence detection and warning print
+  - [x] 4.3 Add notebook code cells for a single VQE run at J=1.0, U=0; display optimized energy and comparison to exact value
 
-- [ ] 5. Implement J-sweep convergence study
-  - [ ] 5.1 Implement `sweep_J(J_values, U=0.0)` iterating over J values, calling `build_hamiltonian`, `exact_ground_energy`, and `run_vqe`, returning a `SweepResult`
-  - [ ] 5.2 Implement `compute_error_flag(exact, vqe)` returning True when relative error > 1%
-  - [ ] 5.3 Add notebook code cell running `sweep_J` for 5 uniformly spaced J values in [1.0, 5.0]
-  - [ ] 5.4 Add notebook code cell plotting VQE vs exact energy versus J, highlighting points where relative error > 1%
+- [x] 5. Implement J-sweep convergence study
+  - [x] 5.1 Implement `sweep_J(J_values, U=0.0)` iterating over J values, calling `build_hamiltonian`, `exact_ground_energy`, and `run_vqe`, returning a `SweepResult`
+  - [x] 5.2 Implement `compute_error_flag(exact, vqe)` returning True when relative error > 1%
+  - [x] 5.3 Add notebook code cell running `sweep_J` for 5 uniformly spaced J values in [1.0, 5.0]
+  - [x] 5.4 Add notebook code cell plotting VQE vs exact energy versus J, highlighting points where relative error > 1%
 
 - [ ] 6. (Optional) Implement U-sweep convergence study
   - [ ] 6.1 Implement `sweep_U(U_values, J=1.0)` mirroring `sweep_J`
   - [ ] 6.2 Add notebook code cells running `sweep_U` for U ∈ {0, 0.5, 1.0} and plotting results
 
-- [ ] 7. Add presentation markdown cells
-  - [ ] 7.1 Write markdown cell explaining the physical meaning of the Fermi-Hubbard Hamiltonian and its hopping/interaction terms
-  - [ ] 7.2 Write markdown cell explaining the `EfficientSU2` ansatz choice and its suitability for particle-number-approximate problems
-  - [ ] 7.3 Write markdown cell explaining the SLSQP optimizer and the VQE optimization procedure
-  - [ ] 7.4 Write markdown cell summarizing final results and conclusions
+- [x] 7. Add presentation markdown cells
+  - [x] 7.1 Write markdown cell explaining the physical meaning of the Fermi-Hubbard Hamiltonian and its hopping/interaction terms
+  - [x] 7.2 Write markdown cell explaining the `EfficientSU2` ansatz choice and its suitability for particle-number-approximate problems
+  - [x] 7.3 Write markdown cell explaining the SLSQP optimizer and the VQE optimization procedure
+  - [x] 7.4 Write markdown cell summarizing final results and conclusions
 
 - [ ] 8. Write tests
   - [ ] 8.1 Create `tests/test_fermi_hubbard_vqe.py` with unit tests: `test_hamiltonian_u0_exact_energy`, `test_hamiltonian_terms_u0`, `test_hamiltonian_terms_u_positive`, `test_vqe_single_run`, `test_sweep_j_length`, `test_relative_error_flag`

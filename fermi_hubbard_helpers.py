@@ -295,7 +295,35 @@ def sweep_J(J_values: list[float], U: float = 0.0) -> SweepResult:
     SweepResult
         Aggregated results for all J values.
     """
-    raise NotImplementedError
+    result = SweepResult()
+    
+    for J in J_values:
+        # Build Hamiltonian for this J value
+        hamiltonian = build_hamiltonian(J, U)
+        
+        # Compute exact ground state energy
+        exact_energy = exact_ground_energy(hamiltonian)
+        
+        # Run VQE
+        ansatz = make_ansatz(num_qubits=6, reps=2)
+        optimizer = SLSQP(maxiter=500)
+        vqe_result = run_vqe(hamiltonian, ansatz, optimizer, seed=42)
+        vqe_energy = vqe_result.eigenvalue
+        
+        # Compute relative error
+        relative_error = abs(vqe_energy - exact_energy) / abs(exact_energy)
+        
+        # Check convergence (within 5% tolerance as per design)
+        converged = relative_error <= 0.05
+        
+        # Store results
+        result.param_values.append(J)
+        result.exact_energies.append(exact_energy)
+        result.vqe_energies.append(vqe_energy)
+        result.converged.append(converged)
+        result.relative_errors.append(relative_error)
+    
+    return result
 
 
 def sweep_U(U_values: list[float], J: float = 1.0) -> SweepResult:
@@ -339,4 +367,5 @@ def compute_error_flag(exact: float, vqe: float) -> bool:
     bool
         True if relative error > 0.01, False otherwise.
     """
-    raise NotImplementedError
+    relative_error = abs(vqe - exact) / abs(exact)
+    return relative_error > 0.01

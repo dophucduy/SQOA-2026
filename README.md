@@ -1,6 +1,7 @@
 # Fermi-Hubbard VQE - Mô phỏng Lượng tử
 
 Dự án mô phỏng mô hình Fermi-Hubbard 3-site sử dụng thuật toán VQE (Variational Quantum Eigensolver) với Qiskit.
+## Link slide: https://gamma.app/docs/Quantum-Computing-Approach-to-Fermi-Hubbard-Model-1n8z85by0le8z5y
 
 ## Cấu trúc thư mục
 

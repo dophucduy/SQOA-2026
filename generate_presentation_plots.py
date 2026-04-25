@@ -203,15 +203,15 @@ def plot_vqe_flowchart():
     ax.set_ylim(0, 14)
     ax.axis('off')
     
-    # Box positions
+    # Box positions - using LaTeX for math symbols
     boxes = [
-        (5, 13, 'Khởi tạo\nθ₀', 'lightblue'),
-        (5, 11, 'Quantum:\nChuẩn bị |ψ(θ)⟩', 'lightgreen'),
-        (5, 9, 'Quantum:\nĐo đạc ⟨Pᵢ⟩', 'lightgreen'),
-        (5, 7, 'Classical:\nTính E(θ)', 'lightyellow'),
-        (5, 5, 'Classical:\nOptimizer\ncập nhật θ', 'lightyellow'),
+        (5, 13, r'Khởi tạo' + '\n' + r'$\theta_0$', 'lightblue'),
+        (5, 11, r'Quantum:' + '\n' + r'Chuẩn bị $|\psi(\theta)\rangle$', 'lightgreen'),
+        (5, 9, r'Quantum:' + '\n' + r'Đo đạc $\langle P_i \rangle$', 'lightgreen'),
+        (5, 7, r'Classical:' + '\n' + r'Tính $E(\theta)$', 'lightyellow'),
+        (5, 5, r'Classical:' + '\n' + r'Optimizer' + '\n' + r'cập nhật $\theta$', 'lightyellow'),
         (5, 3, 'Hội tụ?', 'lightcoral'),
-        (5, 1, 'Trả về\nE_min, θ_opt', 'lightblue'),
+        (5, 1, r'Trả về' + '\n' + r'$E_{min}, \theta_{opt}$', 'lightblue'),
     ]
     
     for x, y, text, color in boxes:
@@ -268,10 +268,10 @@ def plot_vqe_flowchart():
 
 
 # ============================================================================
-# Plot 4: Single Run Results - Bar Chart
+# Plot 4: Single Run Results - Simple and Clear Comparison
 # ============================================================================
 def plot_single_run_results():
-    """Vẽ bar chart so sánh Exact vs VQE energy."""
+    """Vẽ biểu đồ so sánh đơn giản và rõ ràng Exact vs VQE energy."""
     # Run VQE for J=1.0, U=0
     H = build_hamiltonian(J=1.0, U=0.0)
     exact_energy = exact_ground_energy(H)
@@ -281,32 +281,71 @@ def plot_single_run_results():
     vqe_result = run_vqe(H, ansatz, optimizer, seed=42)
     vqe_energy = vqe_result.eigenvalue
     
-    # Create bar chart
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Get number of iterations
+    n_iterations = getattr(vqe_result.optimizer_result, 'nfev', 'N/A')
     
-    methods = ['Exact\nDiagonalization', 'VQE\n(EfficientSU2)']
+    # Create single clear plot
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Bar chart
+    x_pos = [0, 1]
+    methods = ['Exact Diagonalization', 'VQE (EfficientSU2)']
     energies = [exact_energy, vqe_energy]
-    colors = ['#2E86AB', '#A23B72']
+    colors = ['#3498db', '#e74c3c']
     
-    bars = ax.bar(methods, energies, color=colors, alpha=0.8, edgecolor='black', linewidth=2)
+    bars = ax.bar(x_pos, energies, color=colors, alpha=0.85, edgecolor='black', linewidth=2.5, width=0.5)
     
-    # Add value labels on bars
-    for bar, energy in zip(bars, energies):
+    # Add energy values on top of bars
+    for i, (bar, energy) in enumerate(zip(bars, energies)):
         height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height,
+        ax.text(bar.get_x() + bar.get_width()/2., height + 0.02,
                 f'{energy:.6f}',
-                ha='center', va='bottom', fontsize=14, fontweight='bold')
+                ha='center', va='bottom', fontsize=16, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.5', facecolor='white', edgecolor='black', linewidth=1.5))
     
-    # Add relative error annotation
+    # Add method descriptions below x-axis
+    ax.text(0, min(energies) * 1.25, 
+            'Phương pháp: Diagonalization\nThời gian: < 1 giây\nĐộ chính xác: 100%',
+            ha='center', fontsize=11, 
+            bbox=dict(boxstyle='round,pad=0.8', facecolor='lightblue', alpha=0.7, edgecolor='blue', linewidth=1.5))
+    
+    ax.text(1, min(energies) * 1.25, 
+            f'Phương pháp: Quantum VQE\nThời gian: 2-3 giây\nIterations: {n_iterations}',
+            ha='center', fontsize=11,
+            bbox=dict(boxstyle='round,pad=0.8', facecolor='lightcoral', alpha=0.7, edgecolor='red', linewidth=1.5))
+    
+    # Calculate and display relative error prominently
     rel_error = abs(vqe_energy - exact_energy) / abs(exact_energy) * 100
-    ax.text(0.5, min(energies) * 0.95, 
-            f'Relative Error: {rel_error:.2f}%',
-            ha='center', fontsize=14, 
-            bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
     
-    ax.set_ylabel('Ground State Energy', fontsize=14, fontweight='bold')
-    ax.set_title('So sánh Exact vs VQE (J=1.0, U=0)', fontsize=16, fontweight='bold')
-    ax.grid(axis='y', alpha=0.3)
+    # Add arrow showing the difference
+    ax.annotate('', xy=(1, vqe_energy), xytext=(1, exact_energy),
+                arrowprops=dict(arrowstyle='<->', color='green', lw=3))
+    ax.text(1.15, (exact_energy + vqe_energy) / 2, 
+            f'Sai số:\n{rel_error:.3f}%',
+            fontsize=12, fontweight='bold', color='green',
+            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightyellow', edgecolor='green', linewidth=2))
+    
+    # Add horizontal line at exact energy for reference
+    ax.axhline(y=exact_energy, color='gray', linestyle='--', linewidth=1.5, alpha=0.5, label='Exact Energy Reference')
+    
+    # Big result box at top
+    result_text = f'KẾT QUẢ: VQE đạt độ chính xác {100-rel_error:.2f}% so với Exact'
+    ax.text(0.5, max(energies) * 0.92, result_text,
+            ha='center', fontsize=14, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=1', facecolor='yellow', alpha=0.9, edgecolor='orange', linewidth=3))
+    
+    # Labels and formatting
+    ax.set_ylabel('Ground State Energy (Hartree)', fontsize=15, fontweight='bold')
+    ax.set_xlabel('Phương pháp tính toán', fontsize=15, fontweight='bold')
+    ax.set_title('So sánh Exact Diagonalization vs VQE\n(Fermi-Hubbard 3-site, J=1.0, U=0)', 
+                 fontsize=17, fontweight='bold', pad=20)
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(methods, fontsize=13, fontweight='bold')
+    ax.grid(axis='y', alpha=0.3, linestyle='--', linewidth=1)
+    ax.set_ylim([min(energies) * 1.35, max(energies) * 0.85])
+    
+    # Add legend
+    ax.legend(loc='lower right', fontsize=11)
     
     plt.tight_layout()
     plt.savefig('presentation_plots/4_single_run_comparison.png', dpi=300, bbox_inches='tight')
@@ -372,9 +411,9 @@ def plot_summary_table():
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.axis('off')
     
-    # Table data
+    # Table data - using (+) and (-) instead of checkmark symbols
     data = [
-        ['Tiêu chí', 'Ưu điểm ✓', 'Nhược điểm ✗'],
+        ['Tiêu chí', 'Ưu điểm (+)', 'Nhược điểm (-)'],
         ['Độ chính xác', 'Error < 1% cho U=0', 'Không bảo toàn số hạt chính xác'],
         ['Hiệu suất', 'Nhanh (2-3s)', 'Phụ thuộc khởi tạo tham số'],
         ['Robustness', 'Ổn định với nhiều J', 'Cần UCCSD cho U lớn'],
